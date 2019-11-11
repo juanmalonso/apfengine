@@ -1,4 +1,8 @@
 <?php
+echo '<pre>';
+print_r($_SERVER);
+echo '</pre>';
+exit();
 //require '../includes/errors.php';
 
 error_reporting(E_ALL);
