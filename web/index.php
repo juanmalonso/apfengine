@@ -1,23 +1,28 @@
 <?php
-echo '<pre>';
-print_r($_SERVER);
-echo '</pre>';
-exit();
-//require '../includes/errors.php';
-
 error_reporting(E_ALL);
 
-if(isset($_GET['nbsprofile'])){
+$appId          = 'default';
 
-    if($_GET['nbsprofile'] == 'on'){
+$shareDir       = '/var/www/share/';
+$configPath     = $shareDir . 'apps/' . $appId . '/config/';
+
+var_dump($configPath);
+//require '../includes/errors.php';
+require '../includes/config.php';
+
+$config         = $getConfig($configPath);
+
+$vendorPath     = $shareDir . 'lib/vendor/';
+exit("asdasd");
+/*/
+if(isset($_GET['profile'])){
+
+    if($_GET['profile'] == 'on'){
 
         xhprof_enable();
     }
 }
-
-/*
- * Se Carga el Inicializador
- */
+//*/
 
 $nbsdir     = '/var/www/nubesys/';
 $initpath   = $nbsdir . 'nubesys40.ini.php';
@@ -139,10 +144,10 @@ if(is_array($initdata) && isset($initdata[$initkey])){
         $application->useImplicitView(false);
 
         echo $application->handle()->getContent();
+        /*/
+        if(isset($_GET['profile'])){
 
-        if(isset($_GET['nbsprofile'])){
-
-            if($_GET['nbsprofile'] == 'on'){
+            if($_GET['profile'] == 'on'){
 
                 $xhprof_data = xhprof_disable();
 
@@ -157,16 +162,17 @@ if(is_array($initdata) && isset($initdata[$initkey])){
                 $xhprof_runs = new XHProfRuns_Default();
                 // save the run under a namespace "xhprof_foo"
                 $xhprof_runs_id = $xhprof_runs->save_run($xhprof_data, "nbs40profile");
-                /*echo "---------------\n".
-                "Assuming you have set up the http based UI for \n".
-                "XHProf at some address, you can view run at \n".
-                "http://<xhprof-ui-address>/index.php?run=$run_id&source=xhprof_foo\n".
-                "---------------\n";*/
+                //echo "---------------\n".
+                //"Assuming you have set up the http based UI for \n".
+                //"XHProf at some address, you can view run at \n".
+                //"http://<xhprof-ui-address>/index.php?run=$run_id&source=xhprof_foo\n".
+                //"---------------\n";
 
                 $di->get('logger')->debug("http://sp.tkff.co/xhprof_html/index.php?run=$xhprof_runs_id&source=nbs40profile", "profile");
 
             }
         }
+        //*/
     } catch (Phalcon\Exception $e) {
 
         echo $e->getMessage();
