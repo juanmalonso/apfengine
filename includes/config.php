@@ -4,7 +4,7 @@ return $getConfig = function($p_configPath){
     $result = FALSE;
 
     $dir = $p_configPath;
-    var_dump(is_dir($dir));
+    
     if(is_dir($dir)){
 
         if($dh = opendir($dir)){

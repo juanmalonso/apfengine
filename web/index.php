@@ -6,7 +6,7 @@ $appId          = 'default';
 $shareDir       = '/var/www/share/';
 $configPath     = $shareDir . 'apps/' . $appId . '/config/';
 
-var_dump($configPath);
+var_dump($configPath);exit();
 //require '../includes/errors.php';
 require '../includes/config.php';
 
