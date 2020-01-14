@@ -47,15 +47,15 @@ foreach($composer_psr4_prefixes as $key=>$value){
     $namespaces[$key] = $value[0];
 }
 
-if($di->get('config')->loader->enviroment == 'dev'){
+if($globalDI->get('config')->main->enviroment == 'dev'){
 
-    foreach($namespaces as $nms=>$dir){
+    foreach($globalDI->get('config')->loader->devreplacepaths as $replacepath){
+        
+        foreach($namespaces as $namespace=>$path){
 
-        if(strpos('nbs40-',$dir) != -1){
+            if(strpos($replacepath['propath'], $path) != -1){
 
-            foreach ((array)$di->get('config')->loader->devreplacepaths as $oldpath=>$newpath){
-
-                $namespaces[$nms] = str_replace($oldpath,$newpath,$namespaces[$nms]);
+                $namespaces[$namespace] = str_replace($replacepath['propath'], $replacepath['devpath'],$namespaces[$namespace]);
             }
         }
     }
@@ -65,34 +65,32 @@ $loader = new Phalcon\Loader();
 
 $loader->registerFiles($files);
 
+
 $loader->registerNamespaces(
     array_merge($namespaces,
-        array(
-           'Web\Controllers'   => __DIR__.'/../app/controllers/'
-        ),
-        (array)$di->get('config')->loader->namespaces
+        (array)$globalDI->get('config')->loader->namespaces
     )
 );
 
-//print_r($loader->getNamespaces());exit();
+//print_r($loader->getNamespaces());
 
 $loader->registerClasses($classmap);
 
 $dirs = array();
 
-$dirs[] = __DIR__."/../app/tasks";
+//$dirs[] = __DIR__."/../app/tasks";
 
 $loader->registerDirs($dirs);
 
-$eventsManager->attach('loader', function ($event, $loader) {
+$globalDI->get('eventsManager')->attach('loader', function ($event, $loader) {
 
    if ($event->getType() == 'beforeCheckPath') {
         //echo "<hr /> Check - " . $loader->getCheckedPath() . "\r\n";
    }
 });
 
-$loader->setEventsManager($eventsManager);
+$loader->setEventsManager($globalDI->get('eventsManager'));
 
 $loader->register();
 
-$di->set('loader',$loader,TRUE);
+$globalDI->set('loader',$loader,TRUE);

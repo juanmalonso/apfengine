@@ -1,8 +1,11 @@
 <?php
 
 /* REQUEST */
-$request = new Phalcon\Http\Request();
+$globalDI->set('request',function () use ($globalDI){
 
-$di->set('request',$request,true);
+    $request = new Phalcon\Http\Request();
+    
+    return $request;
+},true);
 
 ?>

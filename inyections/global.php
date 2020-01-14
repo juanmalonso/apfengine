@@ -1,7 +1,12 @@
 <?php
 
 /* GLOBAL */
-$global = new Nubesys\Platform\Util\Register();
 
-$di->set('global', $global, true);
+$globalDI->set('global',function () use ($globalDI){
+
+    $global = new Nubesys\Core\Register();
+    
+    return $global;
+},true);
+
 ?>

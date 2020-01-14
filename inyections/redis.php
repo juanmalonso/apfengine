@@ -1,15 +1,13 @@
 <?php
 
-/* CACHER */
-$di->set('redisInstance',function () use ($di){
-
-    $redis = new \Nubesys\Platform\Cache\Cacher($di);
+/* REDIS INSTANCE */
+$globalDI->set('redisInstance',function () use ($globalDI){
 
     $redis = new \Redis();
     
-    if(!$redis->connect($di->get('config')->cache->redis->host,
-                       $di->get('config')->cache->redis->port,
-                       $di->get('config')->cache->redis->lifetime)){
+    if(!$redis->connect($globalDI->get('config')->connections->redis->host,
+                       $globalDI->get('config')->connections->redis->port,
+                       $globalDI->get('config')->connections->redis->lifetime)){
 
         $redis = false;
     }

@@ -1,11 +1,12 @@
 <?php
 
 /* CACHER */
-$di->set('cacher',function () use ($di){
+/*
+$globalDI->set('cacher',function () use ($globalDI){
 
-    $cacher = new \Nubesys\Platform\Cache\Cacher($di);
+    $cacher = new \Nubesys\Platform\Cache\Cacher($globalDI);
 
     return $cacher;
 },true);
-
+*/
 ?>

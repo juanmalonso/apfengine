@@ -1,8 +1,10 @@
 <?php
 
 /* EVENTS MANAGER */
-$eventsManager = new Phalcon\Events\Manager();
+$globalDI->set('eventsManager',function (){
 
-$di->set('eventsManager',$eventsManager,true);
+    $eventsManager = new Phalcon\Events\Manager();
 
+    return $eventsManager;
+},true);
 ?>

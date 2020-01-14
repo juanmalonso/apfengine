@@ -1,6 +1,12 @@
 <?php
 
 /* SESSION */
-$session = new \Nubesys\Platform\Session\Session($di);
-$di->set('session',$session,true);
+/*
+$globalDI->set('session',function () use ($globalDI){
+
+    $session = new \Nubesys\Platform\Session\Session($globalDI);
+
+    return $session;
+},true);
+*/
 ?>

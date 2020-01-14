@@ -1,10 +1,10 @@
 <?php
 
-/* CACHER */
-$di->set('crypt',function () use ($di){
+/* CRYPT */
+$globalDI->set('crypt',function () use ($globalDI){
 
     $crypt = new Phalcon\Crypt();
-    $crypt->setKey($di->get('config')->crypt->privatekey); //Use your own key!
+    $crypt->setKey($globalDI->get('config')->crypt->privatekey);
     return $crypt;
 },true);
 

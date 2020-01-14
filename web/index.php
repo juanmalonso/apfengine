@@ -6,13 +6,173 @@ $appId          = 'default';
 $shareDir       = '/var/www/share/';
 $configPath     = $shareDir . 'apps/' . $appId . '/config/';
 
-var_dump($configPath);exit();
 //require '../includes/errors.php';
 require '../includes/config.php';
 
 $config         = $getConfig($configPath);
 
 $vendorPath     = $shareDir . 'lib/vendor/';
+
+try {
+
+    $globalDI = new Phalcon\Di\FactoryDefault();
+
+    /* CONFIG */
+    $globalDI->set('config',$config,TRUE);
+
+    /* INYECTIONS */
+    require '../includes/inyections.php';
+
+    $server = 'app.web.001';
+    if(isset($_ENV['HOSTNAME'])){
+
+        $server = $_ENV['HOSTNAME'];
+    }
+
+    /* TODO 2020
+    //REQUEST ID (ACCESS ID)
+    if($globalDI->get('request')->hasServer('HTTP_X_REQUEST_ID')){
+
+        $accid = $globalDI->get('request')->getServer('HTTP_X_REQUEST_ID');
+    }else{
+
+        $accid = Nubesys\Platform\Util\Utils::getU36($globalDI);
+    }
+    */
+
+    $globalDI->get('global')->set('server',$server);
+    //$globalDI->get('global')->set('sesid',$di->get('session')->getId());
+    //$globalDI->get('global')->set('accid',$accid);
+
+    /* TODO 2020
+    $logger->setServer($di->get('global')->get('server'));
+    $logger->setSesid($di->get('global')->get('sesid'));
+    $logger->setAccid($di->get('global')->get('accid'));
+    */
+
+    /* RESPONSE OBJECT */
+    $uri                        = $globalDI->get('request')->getURI();
+
+    $globalDI->get('router')->handle($uri);
+
+    $uriParams                  = $globalDI->get('router')->getParams();
+    
+    $responseRedirect           = false;
+    $responseObject             = new Nubesys\Core\Response\WebResponse($globalDI);
+    
+    if(isset($uriParams[0]) && in_array($uriParams[0], array('api','uip','uid','file'))){
+        
+        $requestType            = $uriParams[0];
+        
+        $controller = "core-m404";
+
+        switch($requestType){
+
+            case 'api' :
+                $controller             = $uriParams[1] . "-ws";
+                $responseObject         = new Nubesys\Core\Response\DataResponse($globalDI);
+                break;
+            
+            case 'uip' :
+                $controller             = $uriParams[1] . "-ui";
+                $responseObject         = new Nubesys\Core\Response\WebResponse($globalDI);
+                break;
+
+            case 'uid' :
+                $controller             = $uriParams[1] . "-ui";
+                $responseObject         = new Nubesys\Core\Response\DataResponse($globalDI);
+                break;
+
+            case 'bin' :
+                $controller             = $uriParams[1] . "-bin";
+                $responseObject         = new Nubesys\Core\Response\FileResponse($globalDI);
+                break;
+        }
+        
+        $globalDI->set('responseObject', $responseObject, TRUE);
+
+        $namespace              = implode("\\",array_map(function ($e){ return \Phalcon\Text::camelize($e);}, array('nubesys', $uriParams[1], 'controllers')));
+
+        $globalDI->get('router')->setDefaults(
+            [
+                "controller" => $controller,
+                "namespace" => $namespace
+            ]
+        );
+
+        $application = new Phalcon\Mvc\Application();
+
+        $application->setDI($globalDI);
+
+        $application->useImplicitView(false);
+
+        $application->handle($uri)->getContent();
+
+    }else{
+
+        $responseObject->setHtml("PAGE NOT FOUND - INVALID MODULE");
+    }
+
+    /* HEADERS */
+    $headers = $responseObject->getHeaders();
+    foreach($headers as $key=>$value){
+        
+        header($key . ": " . $value);
+    }
+
+    if($responseObject->getType() == "web"){
+            
+        /* REDIRECT */
+        if($responseObject->hasRedirect()){
+            
+            $responseRedirect = $responseObject->getRedirect();
+        }
+        
+        /* COOKIES */
+        $cookies = $responseObject->getCookies();
+        foreach($cookies as $key=>$value){
+            
+            setcookie( $key , $value, time() + 3600, "/", '', false, true);
+        }
+    }
+
+    if($responseRedirect === false){
+        
+        echo $responseObject->getBody();
+    }else{
+
+        header("Location: " . $responseRedirect);
+        exit();
+    }
+
+    exit();
+    $uripartes              = explode("/", $uri);
+
+
+
+    $controller             = $uripartes[1] . '-' . (($uripartes[1] == "ui" || $uripartes[1] == "uiws") ? "ui" : $uripartes[1]);
+    $namespace              = implode("\\",array_map(function ($e){ return \Phalcon\Text::camelize($e);}, array('nubesys', $uripartes[2], 'controllers')));
+
+    var_dump($controller);
+    var_dump($namespace);
+
+    $globalDI->get('router')->handle($globalDI->get('request')->getURI());
+    
+    var_dump($globalDI->get('router')->getParams());
+    exit();
+    $application = new Phalcon\Mvc\Application();
+
+    $application->setDI($di);
+
+    $application->useImplicitView(false);
+
+    echo $application->handle()->getContent();
+
+} catch (Phalcon\Exception $e) {
+
+    echo $e->getMessage();
+}
+
 exit("asdasd");
 /*/
 if(isset($_GET['profile'])){
