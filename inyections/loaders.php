@@ -49,7 +49,7 @@ foreach($composer_psr4_prefixes as $key=>$value){
 
 if($globalDI->get('config')->main->enviroment == 'dev'){
 
-    foreach($globalDI->get('config')->loader->devreplacepaths as $replacepath){
+    foreach($globalDI->get('config')->loader->apfclassespaths as $replacepath){
         
         foreach($namespaces as $namespace=>$path){
 

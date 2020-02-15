@@ -1,7 +1,6 @@
 <?php
 
 /* VIEW */
-
 $di->set('view', function() use ($di, $config) {
 
     $view = new \Phalcon\Mvc\View\Simple();
@@ -14,8 +13,6 @@ $di->set('view', function() use ($di, $config) {
         ".css" => 'voltService',
         ".php" => "phpService"
     ));
-
-    //$view->setVar('config', $config);
   
     return $view;
 
