@@ -42,16 +42,18 @@ try {
         return $requestManager;
     },true);
 
-    /* TODO 2020
+    
     //REQUEST ID (ACCESS ID)
-    if($globalDI->get('request')->hasServer('HTTP_X_REQUEST_ID')){
+    $headers = $globalDI->get('requestManager')->getHeaders();
+    if(isset($headers['HTTP_X_REQUEST_ID'])){
 
-        $accid = $globalDI->get('request')->getServer('HTTP_X_REQUEST_ID');
+        $accid = $headers['HTTP_X_REQUEST_ID'];
     }else{
 
-        $accid = Nubesys\Platform\Util\Utils::getU36($globalDI);
+        $accid = Nubesys\Core\Utils\Utils::getU36($globalDI);
     }
-    */
+    var_dump($accid);
+    exit();
 
     $globalDI->get('global')->set('server',$server);
     //$globalDI->get('global')->set('sesid',$di->get('session')->getId());
@@ -76,35 +78,76 @@ try {
     if(isset($uriParams[0]) && in_array($uriParams[0], array('api','uip','uid','file'))){
         
         $requestType            = $uriParams[0];
-        
-        $controller = "core-m404";
+
+        if($globalDI->get('router')->getControllerName() == NULL){
+
+            switch($requestType){
+
+                case 'api' :
+                    $controller             = "core-ws";
+                    $namespace              = "Nubesys\\Core\\Controllers";
+                    break;
+                
+                case 'uip' :
+                    $controller             = "core-ui";
+                    $namespace              = "Nubesys\\Core\\Controllers";
+                    break;
+    
+                case 'uid' :
+                    $controller             = "core-ui";
+                    $namespace              = "Nubesys\\Core\\Controllers";
+                    break;
+    
+                case 'bin' :
+                    $controller             = "core-bin";
+                    $namespace              = "Nubesys\\Core\\Controllers";
+                    break;
+            }
+
+        }else{
+
+            switch($requestType){
+
+                case 'api' :
+                    $controller             = $globalDI->get('router')->getControllerName() . "-ws";
+                    break;
+                
+                case 'uip' :
+                    $controller             = $globalDI->get('router')->getControllerName() . "-ui";
+                    break;
+    
+                case 'uid' :
+                    $controller             = $globalDI->get('router')->getControllerName() . "-ui";
+                    break;
+    
+                case 'bin' :
+                    $controller             = $globalDI->get('router')->getControllerName() . "-bin";
+                    break;
+            }
+
+            $namespace                      = $globalDI->get('router')->getNamespaceName();
+        }
 
         switch($requestType){
 
             case 'api' :
-                $controller             = $uriParams[1] . "-ws";
                 $responseManager        = new Nubesys\Core\Response\ResponseManager($globalDI, 'data');
                 break;
             
             case 'uip' :
-                $controller             = $uriParams[1] . "-ui";
                 $responseManager        = new Nubesys\Core\Response\ResponseManager($globalDI, 'web');
                 break;
 
             case 'uid' :
-                $controller             = $uriParams[1] . "-ui";
                 $responseManager        = new Nubesys\Core\Response\ResponseManager($globalDI, 'data');
                 break;
 
             case 'bin' :
-                $controller             = $uriParams[1] . "-bin";
                 $responseManager        = new Nubesys\Core\Response\ResponseManager($globalDI, 'bin');
                 break;
         }
-        
-        $globalDI->set('responseManager', $responseManager, TRUE);
 
-        $namespace              = implode("\\",array_map(function ($e){ return \Phalcon\Text::camelize($e);}, array('nubesys', $uriParams[1], 'controllers')));
+        $globalDI->set('responseManager', $responseManager, TRUE);
 
         $globalDI->get('router')->setDefaults(
             [
@@ -123,7 +166,14 @@ try {
 
     }else{
 
-        $responseManager->setHtml("PAGE NOT FOUND - INVALID MODULE");
+        //TODO : Logica de ruteo de phalcon por defecto
+        $application = new Phalcon\Mvc\Application();
+
+        $application->setDI($globalDI);
+
+        $application->useImplicitView(false);
+
+        $responseManager->setHtml($application->handle($uri)->getContent());
     }
 
     /* HEADERS */
