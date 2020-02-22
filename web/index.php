@@ -19,7 +19,7 @@ $vendorPath     = $shareDir . 'lib/vendor/';
 try {
 
     $globalDI = new Phalcon\Di\FactoryDefault();
-
+    
     /* CONFIG */
     $globalDI->set('config',$config,TRUE);
 
@@ -41,7 +41,6 @@ try {
         
         return $requestManager;
     },true);
-
     
     //REQUEST ID (ACCESS ID)
     $headers = $globalDI->get('requestManager')->getHeaders();
@@ -52,8 +51,6 @@ try {
 
         $accid = Nubesys\Core\Utils\Utils::getU36($globalDI);
     }
-    var_dump($accid);
-    exit();
 
     $globalDI->get('global')->set('server',$server);
     //$globalDI->get('global')->set('sesid',$di->get('session')->getId());
