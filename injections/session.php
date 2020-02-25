@@ -35,8 +35,6 @@ $globalDI->set("session", function () use ($globalDI) {
                     ->setId($sid)
                     ->start();
 
-            var_dump($session->getId());exit();
-
             return $session;
         }else{
 

@@ -62,13 +62,9 @@ try {
     
     /* ADITIONAL INJECTIONS */
     require '../includes/injections.php';
-
-    $globalDI->get('session')->set("asdfg","asdfg");
-    exit();
     
-    //$globalDI->get('global')->set('sesid',$di->get('session')->getId());
+    $globalDI->get('global')->set('sesid',$globalDI->get('session')->getId());
     
-
     /* TODO 2020
     $logger->setServer($di->get('global')->get('server'));
     $logger->setSesid($di->get('global')->get('sesid'));
@@ -165,7 +161,7 @@ try {
                 "namespace" => $namespace
             ]
         );
-
+        
         $application = new Phalcon\Mvc\Application();
 
         $application->setDI($globalDI);
