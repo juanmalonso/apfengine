@@ -1,4 +1,6 @@
 <?php
+ini_set('default_socket_timeout', -1);
+
 error_reporting(E_ALL);
 
 //TODO: Recibir parametros appID y appengine por url o por CLI args
@@ -18,20 +20,17 @@ $vendorPath     = $shareDir . 'lib/vendor/';
 
 try {
 
-    $globalDI = new Phalcon\Di\FactoryDefault();
+    $globalDI               = new Phalcon\Di\FactoryDefault();
     
     /* CONFIG */
     $globalDI->set('config',$config,TRUE);
 
-    /* INYECTIONS */
-    require '../includes/inyections.php';
-
-    $server = 'app.web.001';
-    if(isset($_ENV['HOSTNAME'])){
-
-        $server = $_ENV['HOSTNAME'];
-    }
-
+    /* MANDATORIES INJECTIONS */
+    require "../injections/loaders.php";
+    require "../injections/logger.php";
+    require "../injections/global.php";
+    require "../injections/cache.php";
+    
     //TODO: partir la logica de ejecucion segun tipo de appengine
     /* WEBINPUT */
     $requestObject = new Phalcon\Http\Request();
@@ -42,7 +41,15 @@ try {
         return $requestManager;
     },true);
     
-    //REQUEST ID (ACCESS ID)
+    /* SERVER ID */
+    $server = 'app.web.001';
+    if(isset($_ENV['HOSTNAME'])){
+
+        $server = $_ENV['HOSTNAME'];
+    }
+    $globalDI->get('global')->set('server',$server);
+
+    /* REQUEST ID (ACCESS ID) */
     $headers = $globalDI->get('requestManager')->getHeaders();
     if(isset($headers['HTTP_X_REQUEST_ID'])){
 
@@ -51,10 +58,16 @@ try {
 
         $accid = Nubesys\Core\Utils\Utils::getU36($globalDI);
     }
+    $globalDI->get('global')->set('accid',$accid);
+    
+    /* ADITIONAL INJECTIONS */
+    require '../includes/injections.php';
 
-    $globalDI->get('global')->set('server',$server);
+    $globalDI->get('session')->set("asdfg","asdfg");
+    exit();
+    
     //$globalDI->get('global')->set('sesid',$di->get('session')->getId());
-    //$globalDI->get('global')->set('accid',$accid);
+    
 
     /* TODO 2020
     $logger->setServer($di->get('global')->get('server'));
