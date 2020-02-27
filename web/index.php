@@ -47,7 +47,7 @@ try {
 
         $server = $_ENV['HOSTNAME'];
     }
-    $globalDI->get('global')->set('server',$server);
+    $globalDI->get('global')->set('global.server',$server);
 
     /* REQUEST ID (ACCESS ID) */
     $headers = $globalDI->get('requestManager')->getHeaders();
@@ -58,12 +58,12 @@ try {
 
         $accid = Nubesys\Core\Utils\Utils::getU36($globalDI);
     }
-    $globalDI->get('global')->set('accid',$accid);
+    $globalDI->get('global')->set('global.accid',$accid);
     
     /* ADITIONAL INJECTIONS */
     require '../includes/injections.php';
     
-    $globalDI->get('global')->set('sesid',$globalDI->get('session')->getId());
+    $globalDI->get('global')->set('global.sesid',$globalDI->get('session')->getId());
     
     /* TODO 2020
     $logger->setServer($di->get('global')->get('server'));
