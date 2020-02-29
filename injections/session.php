@@ -8,9 +8,9 @@ $globalDI->set("session", function () use ($globalDI) {
         if($globalDI->get('requestManager')->hasCookie('PHPSESSID')){
 
             $sid    = $globalDI->get('requestManager')->getCookie('PHPSESSID');
-        }else if($globalDI->get('global')->has('accid')){
+        }else if($globalDI->get('global')->has('global.accid')){
 
-            $sid    = $globalDI->get('global')->get('accid');
+            $sid    = $globalDI->get('global')->get('global.accid');
         }
 
         //setcookie( 'PHPSESSID', $sid, time() + 3600, "/", '', false, true);
