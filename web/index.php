@@ -72,8 +72,8 @@ try {
     */
 
     /* RESPONSE OBJECT */
-    $uri                        = $globalDI->get('request')->getURI();
-
+    $uri                        = str_replace(":","_p_", $globalDI->get('request')->getURI());
+    
     $globalDI->get('router')->handle($uri);
 
     $uriParams                  = $globalDI->get('router')->getParams();
@@ -81,7 +81,7 @@ try {
     $redirect                   = false;
     $responseManager            = new Nubesys\Core\Response\ResponseManager($globalDI, 'web');
     
-    if(isset($uriParams[0]) && in_array($uriParams[0], array('api','uip','uid','file'))){
+    if(isset($uriParams[0]) && in_array($uriParams[0], array('api','uip','uid','bin'))){
         
         $requestType            = $uriParams[0];
 
@@ -105,7 +105,7 @@ try {
                     break;
     
                 case 'bin' :
-                    $controller             = "core-bin";
+                    $controller             = "core-fs";
                     $namespace              = "Nubesys\\Core\\Controllers";
                     break;
             }
@@ -127,7 +127,7 @@ try {
                     break;
     
                 case 'bin' :
-                    $controller             = $globalDI->get('router')->getControllerName() . "-bin";
+                    $controller             = $globalDI->get('router')->getControllerName() . "-fs";
                     break;
             }
 
@@ -149,10 +149,10 @@ try {
                 break;
 
             case 'bin' :
-                $responseManager        = new Nubesys\Core\Response\ResponseManager($globalDI, 'bin');
+                $responseManager        = new Nubesys\Core\Response\ResponseManager($globalDI, 'file');
                 break;
         }
-
+        
         $globalDI->set('responseManager', $responseManager, TRUE);
 
         $globalDI->get('router')->setDefaults(

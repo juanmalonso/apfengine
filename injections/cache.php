@@ -15,7 +15,7 @@ $globalDI->set("cache", function () use ($globalDI) {
                 'lifetime'          => $connectionData->lifetime,
                 'host'              => $connectionData->host,
                 'port'              => $connectionData->port,
-                'index'             => $connectionData->db,                    
+                'index'             => $connectionData->db                    
             ];
 
             $adapter = new \Phalcon\Cache\Adapter\Redis(new \Phalcon\Storage\SerializerFactory(), $cacheOptions);

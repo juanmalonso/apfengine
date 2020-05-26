@@ -22,7 +22,7 @@ foreach($globalDI->get('config')->routing->routes->toArray() as $route){
 
         $routerOptions['namespace']    = $route['namespace'];
     }
-
+    
     $router->add("{params:" . $route['pattern'] . "}", $routerOptions)
     ->convert('params', function ($params) use ($route){
 
