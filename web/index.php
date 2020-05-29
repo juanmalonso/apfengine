@@ -5,7 +5,7 @@ error_reporting(E_ALL);
 
 //TODO: Recibir parametros appID y appengine por url o por CLI args
 
-$appId          = 'default';
+$appId          = 'odontoup';
 $appengine      = 'apf';//APACHE + PHP + PHALCON (spf SWOOLE + PHP + PHALCON)
 
 $shareDir       = '/var/www/share/';
