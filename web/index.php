@@ -45,9 +45,7 @@ if(isset($_GET['domain']) && isset($_GET['_url'])){
         }
     }
 }
-var_dump($appId);
-var_dump($appengine);
-exit();
+
 if(isset($_GET['domain'])){
 
     $domainPartes   = explode(".", $_GET['domain']);
