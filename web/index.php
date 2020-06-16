@@ -3,12 +3,64 @@ ini_set('default_socket_timeout', -1);
 
 error_reporting(E_ALL);
 
-//TODO: Recibir parametros appID y appengine por url o por CLI args
-
-$appId          = 'odontoup';
-$appengine      = 'apf';//APACHE + PHP + PHALCON (spf SWOOLE + PHP + PHALCON)
-
 $shareDir       = '/var/www/share/';
+
+require $shareDir . 'apps.ini.php';
+
+$appengine      = $defaultAppEngine;//APACHE + PHP + PHALCON (spf SWOOLE + PHP + PHALCON)
+$appId          = $defaultAppId;
+
+function replacePatternParam($_str, $p_params){
+
+    $result = $_str;
+
+    if(preg_match('/^\{(.*)\}$/', $_str, $matches)){
+
+        $result = $p_params[$matches[1]];
+    }
+
+    return $result;
+}
+
+if(isset($_GET['domain']) && isset($_GET['_url'])){
+
+    foreach($preRouters as $preRoute){
+
+        if(preg_match($preRoute['pattern'], $_GET['domain'] . $_GET['_url'], $matches)){
+            
+            if(isset($preRoute['redirectTo'])){
+
+
+                header("Location: " . $preRoute['redirectTo']);
+                exit();
+            }
+
+            if(isset($preRoute['appIdTo']) && isset($preRoute['appEngineTo'])){
+
+                $appengine      = replacePatternParam($preRoute['appEngineTo'], $matches);
+                $appId          = replacePatternParam($preRoute['appIdTo'], $matches);
+            }
+
+            break;
+        }
+    }
+}
+var_dump($appId);
+var_dump($appengine);
+exit();
+if(isset($_GET['domain'])){
+
+    $domainPartes   = explode(".", $_GET['domain']);
+
+    if(count($domainPartes) > 1){
+
+        if(in_array($domainPartes[0], $apps)){
+
+            $appId  = $domainPartes[0];
+        }
+    }
+}
+
 $configPath     = $shareDir . 'apps/' . $appId . '/config/';
 
 //require '../includes/errors.php';
