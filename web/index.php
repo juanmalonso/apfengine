@@ -46,19 +46,6 @@ if(isset($_GET['domain']) && isset($_GET['_url'])){
     }
 }
 
-if(isset($_GET['domain'])){
-
-    $domainPartes   = explode(".", $_GET['domain']);
-
-    if(count($domainPartes) > 1){
-
-        if(in_array($domainPartes[0], $apps)){
-
-            $appId  = $domainPartes[0];
-        }
-    }
-}
-
 $configPath     = $shareDir . 'apps/' . $appId . '/config/';
 
 //require '../includes/errors.php';
