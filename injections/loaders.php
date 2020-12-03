@@ -62,7 +62,7 @@ if($globalDI->get('config')->main->enviroment == 'dev'){
 }
 
 $loader = new Phalcon\Loader();
-
+//var_dump($files);exit();
 $loader->registerFiles($files);
 
 
