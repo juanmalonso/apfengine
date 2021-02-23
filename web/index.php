@@ -3,6 +3,10 @@ ini_set('default_socket_timeout', -1);
 
 error_reporting(E_ALL);
 
+$globalDI       = NULL;
+
+require '../includes/errors.php';
+
 $shareDir       = '/var/www/share/';
 
 require $shareDir . 'apps.ini.php';
@@ -48,7 +52,6 @@ if(isset($_GET['domain']) && isset($_GET['_url'])){
 
 $configPath     = $shareDir . 'apps/' . $appId . '/config/';
 
-//require '../includes/errors.php';
 require '../includes/config.php';
 
 $config         = $getConfig($configPath);
@@ -64,8 +67,8 @@ try {
 
     /* MANDATORIES INJECTIONS */
     require "../injections/loaders.php";
-    require "../injections/logger.php";
     require "../injections/global.php";
+    require "../injections/logger.php";
     require "../injections/cache.php";
     
     //TODO: partir la logica de ejecucion segun tipo de appengine
@@ -96,24 +99,26 @@ try {
         $accid = Nubesys\Core\Utils\Utils::getU36($globalDI);
     }
     $globalDI->get('global')->set('global.accid',$accid);
-    
+
     /* ADITIONAL INJECTIONS */
     require '../includes/injections.php';
     
-    $globalDI->get('global')->set('global.sesid',$globalDI->get('session')->getId());
+    $sesid  = $globalDI->get('session')->getId();
+    $globalDI->get('global')->set('global.sesid',$sesid);
     
-    /* TODO 2020
-    $logger->setServer($di->get('global')->get('server'));
-    $logger->setSesid($di->get('global')->get('sesid'));
-    $logger->setAccid($di->get('global')->get('accid'));
-    */
-
+    header("SERVERN: " . $server);
+    header("ACCID: " . $accid);
+    header("SESID: " . $sesid);
+    
     /* RESPONSE OBJECT */
     $uri                        = str_replace(":","_p_", $globalDI->get('request')->getURI());
     
     $globalDI->get('router')->handle($uri);
 
     $uriParams                  = $globalDI->get('router')->getParams();
+    
+    //LOG DEBUG URI PARAMS
+    $globalDI->get('logger')->debug("URI PARAMS", "MAIN|ROUTER", $uriParams);
     
     $redirect                   = false;
     $responseManager            = new Nubesys\Core\Response\ResponseManager($globalDI, 'web');
@@ -171,6 +176,9 @@ try {
             $namespace                      = $globalDI->get('router')->getNamespaceName();
         }
 
+        //LOG DEBUG REQUEST TYPE
+        $globalDI->get('logger')->debug("REQUEST TYPE " . $requestType, "MAIN|ROUTER");
+
         switch($requestType){
 
             case 'api' :
@@ -191,6 +199,9 @@ try {
         }
         
         $globalDI->set('responseManager', $responseManager, TRUE);
+
+        //LOG DEBUG ROUTER DEFAULTS
+        $globalDI->get('logger')->debug("CONTROLLER " . $namespace . " - " . $controller, "MAIN|ROUTER");
 
         $globalDI->get('router')->setDefaults(
             [
@@ -254,7 +265,7 @@ try {
 
 } catch (Phalcon\Exception $e) {
 
-    echo $e->getMessage();
+    echo "Exception asdfg" . $e->getMessage();
 }
 
 ?>

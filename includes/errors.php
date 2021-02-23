@@ -1,10 +1,12 @@
 <?php
 
 function nbs_error_handler($errorno, $errorm){
-
-    $timestamp = microtime(true);
-    $exit = false;
-    $errort = 'E_RECOVERABLE_ERROR';
+    global $globalDI;
+    
+    $datetime       = strftime("%Y-%m-%dT%H:%M:%S%z");
+    $timestamp      = microtime(true);
+    $exit           = false;
+    $errort         = 'E_RECOVERABLE_ERROR';
 
     switch ($errorno) {
         case 1:     $errort = 'E_ERROR';
@@ -49,10 +51,20 @@ function nbs_error_handler($errorno, $errorm){
                     break;
     }
 
-    $accid = '-';
-    if(isset($_SERVER['HTTP_X_REQUEST_ID'])){
+    $accid              = '-';
+    $server             = '-';
+    $sesid              = '-';
+    $contexts           = array("NBS");
+    if($globalDI != NULL){
 
-        $accid = $_SERVER['HTTP_X_REQUEST_ID'];
+        $server         = $globalDI->get('global')->get('global.server');
+        $accid          = $globalDI->get('global')->get('global.accid');
+        $sesid          = $globalDI->get('global')->get('global.sesid');
+
+        if($globalDI->has('config')){
+
+            $contexts   = explode("|", $globalDI->get('config')->main->logs->context);
+        }
     }
 
     $errorf = '-';
@@ -67,18 +79,70 @@ function nbs_error_handler($errorno, $errorm){
         $errorl = func_get_args()[3];
     }
 
-    $error_obj = array();
-    $error_obj['@timestamp']        = "$timestamp";
-    $error_obj['accid']             = $accid;
-    $error_obj['type']              = "error";
-    $error_obj['error']             = array();
-    $error_obj['error']['num']      = "$errorno";
-    $error_obj['error']['label']    = $errort;
-    $error_obj['error']['message']  = $errorm;
-    $error_obj['error']['file']     = utf8_encode($errorf);
-    $error_obj['error']['line']     = "$errorl";
+    $logobj                         = array();
+    $logobj['datetime']             = "$datetime";
+    $logobj['timestamp']            = "$timestamp";
+    $logobj['accid']                = $accid;
+    $logobj['sesid']                = $sesid;
+    $logobj['server']               = $server;
+    $logobj['type']                 = "PHPERROR";
+    $logobj['contexts']             = $contexts;
+    $logobj['line']                 = array();
+    $logobj['line']['message']      = $errorm;
+    $logobj['line']['type']         = $errort;
+    $logobj['line']['file']         = utf8_encode($errorf);
+    $logobj['line']['line']         = $errorl;
+
+    $stdout = fopen('php://stdout', 'w');
+    fputs($stdout, json_encode($logobj, JSON_UNESCAPED_SLASHES) . "\r\n");
+    fclose($stdout);   
+
+    if($exit){
+
+        exit("ERROR");
+    }
+}
+
+function nbs_exception_handler($p_exception){
+    global $globalDI;
     
-    error_log(json_encode($error_obj, JSON_UNESCAPED_SLASHES));
+    $datetime       = strftime("%Y-%m-%dT%H:%M:%S%z");
+    $timestamp      = microtime(true);
+    $exit           = false;
+
+    $accid              = '-';
+    $server             = '-';
+    $sesid              = '-';
+    $contexts           = array("NBS");
+    if($globalDI != NULL){
+
+        $server         = $globalDI->get('global')->get('global.server');
+        $accid          = $globalDI->get('global')->get('global.accid');
+        $sesid          = $globalDI->get('global')->get('global.sesid');
+
+        if($globalDI->has('config')){
+
+            $contexts   = explode("|", $globalDI->get('config')->main->logs->context);
+        }
+    }
+
+    $logobj                         = array();
+    $logobj['datetime']             = "$datetime";
+    $logobj['timestamp']            = "$timestamp";
+    $logobj['accid']                = $accid;
+    $logobj['sesid']                = $sesid;
+    $logobj['server']               = $server;
+    $logobj['type']                 = "PHPEXEPTION";
+    $logobj['contexts']             = $contexts;
+    $logobj['line']                 = array();
+    $logobj['line']['message']      = "[" . $p_exception->getCode() . "]" . $p_exception->getMessage();
+    $logobj['line']['type']         = 'EXEPTION';
+    $logobj['line']['file']         = utf8_encode($p_exception->getFile());
+    $logobj['line']['line']         = $p_exception->getLine();
+
+    $stdout = fopen('php://stdout', 'w');
+    fputs($stdout, json_encode($logobj, JSON_UNESCAPED_SLASHES) . "\r\n");
+    fclose($stdout);   
 
     if($exit){
 
@@ -87,5 +151,5 @@ function nbs_error_handler($errorno, $errorm){
 }
 
 set_error_handler("nbs_error_handler");
-
+set_exception_handler("nbs_exception_handler");
 ?>
