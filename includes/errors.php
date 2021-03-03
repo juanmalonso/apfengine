@@ -55,12 +55,16 @@ function nbs_error_handler($errorno, $errorm){
     $server             = '-';
     $sesid              = '-';
     $contexts           = array("NBS");
+
     if($globalDI != NULL){
 
-        $server         = $globalDI->get('global')->get('global.server');
-        $accid          = $globalDI->get('global')->get('global.accid');
-        $sesid          = $globalDI->get('global')->get('global.sesid');
+        if($globalDI->has('global')){
 
+            $server         = $globalDI->get('global')->get('global.server');
+            $accid          = $globalDI->get('global')->get('global.accid');
+            $sesid          = $globalDI->get('global')->get('global.sesid');
+        }
+        
         if($globalDI->has('config')){
 
             $contexts   = explode("|", $globalDI->get('config')->main->logs->context);
@@ -116,9 +120,12 @@ function nbs_exception_handler($p_exception){
     $contexts           = array("NBS");
     if($globalDI != NULL){
 
-        $server         = $globalDI->get('global')->get('global.server');
-        $accid          = $globalDI->get('global')->get('global.accid');
-        $sesid          = $globalDI->get('global')->get('global.sesid');
+        if($globalDI->has('global')){
+
+            $server         = $globalDI->get('global')->get('global.server');
+            $accid          = $globalDI->get('global')->get('global.accid');
+            $sesid          = $globalDI->get('global')->get('global.sesid');
+        }
 
         if($globalDI->has('config')){
 
@@ -142,7 +149,7 @@ function nbs_exception_handler($p_exception){
 
     $stdout = fopen('php://stdout', 'w');
     fputs($stdout, json_encode($logobj, JSON_UNESCAPED_SLASHES) . "\r\n");
-    fclose($stdout);   
+    fclose($stdout);
 
     if($exit){
 

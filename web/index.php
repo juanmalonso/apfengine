@@ -15,27 +15,27 @@ $appengine      = $defaultAppEngine;//APACHE + PHP + PHALCON (spf SWOOLE + PHP +
 $appId          = $defaultAppId;
 
 function replacePatternParam($_str, $p_params){
-
     $result = $_str;
 
-    if(preg_match('/^\{(.*)\}$/', $_str, $matches)){
+    foreach($p_params as $key=>$value){
 
-        $result = $p_params[$matches[1]];
+        $result = str_replace("{" . $key . "}", $value, $result);
     }
 
     return $result;
 }
 
-if(isset($_GET['domain']) && isset($_GET['_url'])){
+if(isset($_SERVER['HTTP_HOST']) && isset($_GET['_url'])){
+    
+    $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || (isset($_SERVER['SERVER_PORT']) && (int) $_SERVER['SERVER_PORT'] === 443) ? "https://" : "http://";
 
     foreach($preRouters as $preRoute){
-
-        if(preg_match($preRoute['pattern'], $_GET['domain'] . $_GET['_url'], $matches)){
+        
+        if(preg_match($preRoute['pattern'], $protocol . $_SERVER['HTTP_HOST'] . $_GET['_url'], $matches)){
             
             if(isset($preRoute['redirectTo'])){
 
-
-                header("Location: " . $preRoute['redirectTo']);
+                header("Location: " . replacePatternParam($preRoute['redirectTo'], $matches));
                 exit();
             }
 
@@ -64,8 +64,11 @@ try {
     
     /* CONFIG */
     $globalDI->set('config',$config,TRUE);
-
+    
     /* MANDATORIES INJECTIONS */
+
+    //require_once $vendorPath . 'autoload.php';
+
     require "../injections/loaders.php";
     require "../injections/global.php";
     require "../injections/logger.php";
@@ -99,7 +102,7 @@ try {
         $accid = Nubesys\Core\Utils\Utils::getU36($globalDI);
     }
     $globalDI->get('global')->set('global.accid',$accid);
-
+    
     /* ADITIONAL INJECTIONS */
     require '../includes/injections.php';
     
@@ -265,7 +268,8 @@ try {
 
 } catch (Phalcon\Exception $e) {
 
-    echo "Exception asdfg" . $e->getMessage();
+    echo "General Exception " . $e->getMessage() . " " . $e->getFile() . " " . $e->getLine();
+    //var_dump($e);
 }
 
 ?>

@@ -18,18 +18,17 @@ $composer_namespaces = require $path . 'autoload_namespaces.php';
 $composer_psr4_prefixes = require $path . 'autoload_psr4.php';
 
 foreach($composer_files as $key=>$value){
-
+    
     $files[] = $value;
 }
 
 foreach($composer_classmap as $key=>$value){
-
+    
     $classmap[$key] = $value;
 }
 
-
 foreach($composer_namespaces as $key=>$value){
-
+    
     if(strpos($key, '_')){
 
         $prefixes[$key] = $value[0] . '/';
@@ -41,9 +40,9 @@ foreach($composer_namespaces as $key=>$value){
 }
 
 foreach($composer_psr4_prefixes as $key=>$value){
-
+    
     $key = substr($key, 0, strlen($key) -1);
-
+    
     $namespaces[$key] = $value[0];
 }
 
@@ -62,9 +61,8 @@ if($globalDI->get('config')->main->enviroment == 'dev'){
 }
 
 $loader = new Phalcon\Loader();
-//var_dump($files);exit();
-$loader->registerFiles($files);
 
+$loader->registerFiles($files);
 
 $loader->registerNamespaces(
     array_merge($namespaces,
@@ -94,3 +92,5 @@ $loader->setEventsManager($globalDI->get('eventsManager'));
 $loader->register();
 
 $globalDI->set('loader',$loader,TRUE);
+
+

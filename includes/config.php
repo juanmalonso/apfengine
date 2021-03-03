@@ -1,6 +1,6 @@
 <?php
 return $getConfig = function($p_configPath){
-
+    
     $result = FALSE;
 
     $dir = $p_configPath;
@@ -12,15 +12,16 @@ return $getConfig = function($p_configPath){
             $config = array();
 
             while (($file = readdir($dh)) !== false){
-
+                
                 if($file != "." && $file != ".." && $file != "config.php" && $file != "configOld.php" && $file != "loader.php"){
 
                     $fileNamePartes = explode(".", $file);
+                    
 
                     $jsonData       = file_get_contents($dir."$file");
 
                     $arrayData     = json_decode($jsonData, true);
-
+                    
                     if(is_array($arrayData)){
 
                         $config[$fileNamePartes[0]] = $arrayData;
@@ -41,6 +42,9 @@ return $getConfig = function($p_configPath){
 
             //TODO: Error de Apertura de Directorios
         }
+    }else{
+
+        //TODO ERROR DE LECTURA
     }
 
     return $result;
