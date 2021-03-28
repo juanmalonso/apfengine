@@ -1,4 +1,5 @@
 <?php
+
 ini_set('default_socket_timeout', -1);
 
 error_reporting(E_ALL);
@@ -28,7 +29,7 @@ function replacePatternParam($_str, $p_params){
 if(isset($_SERVER['HTTP_HOST']) && isset($_GET['_url'])){
     
     $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || (isset($_SERVER['SERVER_PORT']) && (int) $_SERVER['SERVER_PORT'] === 443) ? "https://" : "http://";
-
+    
     foreach($preRouters as $preRoute){
         
         if(preg_match($preRoute['pattern'], $protocol . $_SERVER['HTTP_HOST'] . $_GET['_url'], $matches)){
@@ -36,7 +37,6 @@ if(isset($_SERVER['HTTP_HOST']) && isset($_GET['_url'])){
             if(isset($preRoute['redirectTo'])){
 
                 header("Location: " . replacePatternParam($preRoute['redirectTo'], $matches));
-                exit();
             }
 
             if(isset($preRoute['appIdTo']) && isset($preRoute['appEngineTo'])){
