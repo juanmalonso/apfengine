@@ -1,5 +1,4 @@
 <?php
-
 ini_set('default_socket_timeout', -1);
 
 error_reporting(E_ALL);
@@ -37,6 +36,7 @@ if(isset($_SERVER['HTTP_HOST']) && isset($_GET['_url'])){
             if(isset($preRoute['redirectTo'])){
 
                 header("Location: " . replacePatternParam($preRoute['redirectTo'], $matches));
+                exit();
             }
 
             if(isset($preRoute['appIdTo']) && isset($preRoute['appEngineTo'])){
