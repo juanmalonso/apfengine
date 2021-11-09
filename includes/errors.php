@@ -90,12 +90,10 @@ function nbs_error_handler($errorno, $errorm){
     $logobj['sesid']                = $sesid;
     $logobj['server']               = $server;
     $logobj['type']                 = "PHPERROR";
-    $logobj['contexts']             = $contexts;
-    $logobj['line']                 = array();
-    $logobj['line']['message']      = $errorm;
-    $logobj['line']['type']         = $errort;
-    $logobj['line']['file']         = utf8_encode($errorf);
-    $logobj['line']['line']         = $errorl;
+    $logobj['contexts']             = implode(" ",$contexts);
+    $logobj['message']              = $errort . " " . $errorm;
+    $logobj['errorfile']            = utf8_encode($errorf);
+    $logobj['errorline']            = $errorl;
     
     $stdout = fopen('php://stdout', 'w');
     fputs($stdout, json_encode($logobj, JSON_UNESCAPED_SLASHES) . "\r\n");
@@ -142,12 +140,10 @@ function nbs_exception_handler($p_exception){
     $logobj['sesid']                = $sesid;
     $logobj['server']               = $server;
     $logobj['type']                 = "PHPEXEPTION";
-    $logobj['contexts']             = $contexts;
-    $logobj['line']                 = array();
-    $logobj['line']['message']      = "[" . $p_exception->getCode() . "]" . $p_exception->getMessage();
-    $logobj['line']['type']         = 'EXEPTION';
-    $logobj['line']['file']         = utf8_encode($p_exception->getFile());
-    $logobj['line']['line']         = $p_exception->getLine();
+    $logobj['contexts']             = implode(" ",$contexts);
+    $logobj['message']              = $p_exception->getCode() . " " . $p_exception->getMessage();
+    $logobj['file']                 = utf8_encode($p_exception->getFile());
+    $logobj['line']                 = $p_exception->getLine();
     
     $stdout = fopen('php://stdout', 'w');
     fputs($stdout, json_encode($logobj, JSON_UNESCAPED_SLASHES) . "\r\n");

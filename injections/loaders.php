@@ -70,7 +70,7 @@ $loader->registerNamespaces(
     )
 );
 
-//print_r($loader->getNamespaces());
+//var_dump($loader->getNamespaces());
 
 $loader->registerClasses($classmap);
 

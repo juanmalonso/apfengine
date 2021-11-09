@@ -121,7 +121,7 @@ try {
     $uriParams                  = $globalDI->get('router')->getParams();
     
     //LOG DEBUG URI PARAMS
-    $globalDI->get('logger')->debug("URI PARAMS", "MAIN|ROUTER", $uriParams);
+    //$globalDI->get('logger')->debug("URI PARAMS", "MAIN|ROUTER", $uriParams);
     
     $redirect                   = false;
     $responseManager            = new Nubesys\Core\Response\ResponseManager($globalDI, 'web');
@@ -180,7 +180,7 @@ try {
         }
 
         //LOG DEBUG REQUEST TYPE
-        $globalDI->get('logger')->debug("REQUEST TYPE " . $requestType, "MAIN|ROUTER");
+        //$globalDI->get('logger')->debug("REQUEST TYPE " . $requestType, "MAIN|ROUTER");
 
         switch($requestType){
 
@@ -204,7 +204,7 @@ try {
         $globalDI->set('responseManager', $responseManager, TRUE);
 
         //LOG DEBUG ROUTER DEFAULTS
-        $globalDI->get('logger')->debug("CONTROLLER " . $namespace . " - " . $controller, "MAIN|ROUTER");
+        //$globalDI->get('logger')->debug("CONTROLLER " . $namespace . " - " . $controller, "MAIN|ROUTER");
 
         $globalDI->get('router')->setDefaults(
             [
