@@ -1,11 +1,11 @@
 <?php
 
 /* TRACKER */
-$di->set('tracker',function () use ($di){
+$globalDI->set('tracker',function () use ($globalDI) {
 
-    $app = $di->get('config')->analytics->app;
-
-    $tracker = new \Nbs\Analytics\Tracker($di, $app);
+    $tracker = new \Nubesys\Analytics\Tracker();
+    
+    $tracker->setDI($globalDI);
 
     return $tracker;
 },true);

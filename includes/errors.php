@@ -118,6 +118,7 @@ function nbs_exception_handler($p_exception){
     $server             = '-';
     $sesid              = '-';
     $contexts           = array("NBS");
+
     if($globalDI != NULL){
 
         if($globalDI->has('global')){
@@ -152,7 +153,7 @@ function nbs_exception_handler($p_exception){
     //var_dump(json_encode($logobj, JSON_UNESCAPED_SLASHES));
     
     if($exit){
-
+        
         exit();
     }
 }

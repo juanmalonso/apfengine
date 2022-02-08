@@ -72,6 +72,7 @@ try {
     require "../injections/loaders.php";
     require "../injections/global.php";
     require "../injections/logger.php";
+    require "../injections/tracker.php";
     require "../injections/cache.php";
     
     //TODO: partir la logica de ejecucion segun tipo de appengine
@@ -233,6 +234,9 @@ try {
         $responseManager->setHtml($application->handle($uri)->getContent());
     }
 
+    /* CODES */
+    http_response_code($responseManager->getHttpCode());
+
     /* HEADERS */
     $headers = $responseManager->getHeaders();
     foreach($headers as $key=>$value){
@@ -249,7 +253,6 @@ try {
         }
         
         /* COOKIES */
-        //TODO: Falta 
         $cookies = $responseManager->getCookies();
         foreach($cookies as $key=>$value){
             
@@ -269,7 +272,19 @@ try {
 } catch (Phalcon\Exception $e) {
 
     echo "General Exception " . $e->getMessage() . " " . $e->getFile() . " " . $e->getLine();
-    //var_dump($e);
+    echo "<hr />";
+
+    foreach($e->getTrace() as $trace){
+
+        echo "function: " . $trace['function'] . ", class: " . $trace['class'];
+        
+        if(isset($trace['file'])){
+            
+            echo ", file: " . $trace['file'] . ", line: " . $trace['line'];
+        }
+
+        echo "<hr />";
+    }
 }
 
 ?>

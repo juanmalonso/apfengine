@@ -8,6 +8,7 @@ $router->removeExtraSlashes(true);
 foreach($globalDI->get('config')->routing->routes->toArray() as $route){
     
     $routerOptions                      = array();
+
     //ACTION
     $routerOptions['action']            = (isset($route['action'])) ? $route['action'] : "route";
 
