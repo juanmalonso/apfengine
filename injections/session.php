@@ -24,7 +24,8 @@ $globalDI->set("session", function () use ($globalDI) {
             $sessionOptions       = [
                 'host'              => $connectionData->host,
                 'port'              => $connectionData->port,
-                'index'             => $connectionData->db,                    
+                'index'             => $connectionData->db,
+                'auth'              => $connectionData->auth                    
             ];
 
             $session = new \Phalcon\Session\Manager();
